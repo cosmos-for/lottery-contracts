@@ -6,7 +6,7 @@ use cw_storage_plus::{Item, Map};
 pub struct State {
     pub version: u64,
     // 彩票创建时的block height
-    pub blockheight: u64,
+    pub height: u64,
     pub title: String,
     // 彩票的所有者，彩票被 领奖 之前为 Operator，领奖后 为 中奖者
     pub owner: Addr,

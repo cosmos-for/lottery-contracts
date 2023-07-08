@@ -25,7 +25,7 @@ pub fn instantiate(
 
     let state = State {
         version: 1,
-        blockheight,
+        height: blockheight,
         title: msg.title,
         owner: info.sender,
         rewards: 0,

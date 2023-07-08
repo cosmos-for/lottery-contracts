@@ -26,9 +26,9 @@ pub fn buy(
 
     let state = state.load(deps.storage)?;
     let block_height = env.block.height;
-    let lottery_sequnce = state.blockheight;
+    let lottery_sequnce = state.height;
     // Only can buy lottery after created block height
-    if state.blockheight > block_height {
+    if state.height > block_height {
         return Err(ContractError::LotterySequenceNotMatchErr {
             height: block_height,
             sequence: lottery_sequnce,
@@ -78,9 +78,9 @@ pub fn close(
     }
 
     let block_height = env.block.height;
-    let lottery_sequnce = state.blockheight;
+    let lottery_sequnce = state.height;
     // Only can buy lottery after created block height
-    if state.blockheight > block_height {
+    if state.height > block_height {
         return Err(ContractError::LotterySequenceNotMatchErr {
             height: block_height,
             sequence: lottery_sequnce,
