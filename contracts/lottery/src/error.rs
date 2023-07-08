@@ -1,4 +1,4 @@
-use cosmwasm_std::StdError;
+use cosmwasm_std::{Addr, StdError};
 use cw_utils::PaymentError;
 use thiserror::Error;
 
@@ -11,7 +11,7 @@ pub enum ContractError {
     UnauthorizedErr {},
 
     #[error("Agent {agent} already bought {addr}")]
-    CantBuyLastLotteryErr { addr: String, agent: String },
+    OnlyBuyLotteryOnceErr { addr: Addr, agent: String },
 
     #[error("{0}")]
     PaymentErr(#[from] PaymentError),
@@ -23,5 +23,5 @@ pub enum ContractError {
     LotterySequenceNotMatchErr { height: u64, sequence: u64 },
 
     #[error("Lottery: {addr} is already closed")]
-    LotteryIsAlreadyClosedErr { addr: String },
+    LotteryIsAlreadyClosedErr { addr: Addr },
 }

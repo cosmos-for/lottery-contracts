@@ -12,7 +12,7 @@ pub fn buy(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    addr: String,
+    // addr: String,
     memo: Option<String>,
     denom: String,
     state: Item<State>,
@@ -25,8 +25,11 @@ pub fn buy(
     }
 
     let state = state.load(deps.storage)?;
-    let block_height = env.block.height;
     let lottery_sequnce = state.height;
+
+    let contract_addr = env.contract.address;
+    let block_height = env.block.height;
+
     // Only can buy lottery after created block height
     if state.height > block_height {
         return Err(ContractError::LotterySequenceNotMatchErr {
@@ -36,7 +39,9 @@ pub fn buy(
     }
     // Can't buy lottery after lottery is already closed
     if state.winner.is_some() {
-        return Err(ContractError::LotteryIsAlreadyClosedErr { addr });
+        return Err(ContractError::LotteryIsAlreadyClosedErr {
+            addr: contract_addr,
+        });
     }
 
     let sender = info.sender;
@@ -44,9 +49,9 @@ pub fn buy(
 
     // Only can buy lottery once
     match bettor {
-        Some(_) => Err(ContractError::CantBuyLastLotteryErr {
+        Some(_) => Err(ContractError::OnlyBuyLotteryOnceErr {
             agent: sender.to_string(),
-            addr,
+            addr: contract_addr,
         }),
         None => {
             bettors.save(
@@ -66,7 +71,7 @@ pub fn close(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    addr: String,
+    // addr: String,
     state: Item<State>,
     _bettors: Map<&Addr, BetInfo>,
 ) -> Result<Response, ContractError> {
@@ -88,7 +93,9 @@ pub fn close(
     }
     // Can't buy lottery after lottery is already closed
     if state.winner.is_some() {
-        return Err(ContractError::LotteryIsAlreadyClosedErr { addr });
+        return Err(ContractError::LotteryIsAlreadyClosedErr {
+            addr: env.contract.address,
+        });
     }
 
     // Calculate the rewards TODO

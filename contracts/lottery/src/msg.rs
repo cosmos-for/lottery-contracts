@@ -10,12 +10,12 @@ pub struct InstantiateMsg {
 #[cw_serde]
 pub enum ExecuteMsg {
     Buy {
-        addr: String,
+        // addr: String,
         denom: String,
         memo: Option<String>,
     },
     Close {
-        addr: String,
+        // addr: String,
     },
 }
 

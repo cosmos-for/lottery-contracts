@@ -4,6 +4,7 @@ pub mod helpers;
 pub mod msg;
 pub mod state;
 
+#[cfg(any(feature = "mt", test))]
 pub mod multitest;
 
 pub use crate::error::ContractError;
@@ -36,10 +37,10 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Buy { addr, denom, memo } => {
-            contract::exec::buy(deps, env, info, addr, memo, denom, STATE, BETTORS)
+        ExecuteMsg::Buy { denom, memo } => {
+            contract::exec::buy(deps, env, info, memo, denom, STATE, BETTORS)
         }
-        ExecuteMsg::Close { addr } => contract::exec::close(deps, env, info, addr, STATE, BETTORS),
+        ExecuteMsg::Close {} => contract::exec::close(deps, env, info, STATE, BETTORS),
     }
 }
 
