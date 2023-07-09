@@ -46,7 +46,16 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    todo!()
+    use ExecuteMsg::*;
+
+    match msg {
+        CreateLottery {
+            lottery_code_id,
+            title,
+        } => exec::create_lottery(deps, env, info, lottery_code_id, title, CONFIG),
+        CloseLottery { lottery } => exec::close_lottery(deps, env, info, lottery),
+        DrawLottery { lottery } => exec::draw_lottery(deps, env, info, lottery),
+    }
 }
 
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {

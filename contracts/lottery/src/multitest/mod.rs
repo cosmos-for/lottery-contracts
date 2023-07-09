@@ -12,9 +12,9 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Copy)]
-pub struct CodeId(u64);
+pub struct LotteryCodeId(u64);
 
-impl CodeId {
+impl LotteryCodeId {
     pub fn store_code(app: &mut App) -> Self {
         let contract = ContractWrapper::new(execute, instantiate, query).with_reply(reply);
         let code_id = app.store_code(Box::new(contract));
@@ -32,8 +32,8 @@ impl CodeId {
     }
 }
 
-impl From<CodeId> for u64 {
-    fn from(code_id: CodeId) -> Self {
+impl From<LotteryCodeId> for u64 {
+    fn from(code_id: LotteryCodeId) -> Self {
         code_id.0
     }
 }
@@ -47,9 +47,14 @@ impl LotteryContract {
         self.0.clone()
     }
 
+    pub fn from_addr(addr: Addr) -> Self {
+        Self(addr)
+    }
+
+    #[track_caller]
     pub fn instantiate(
         app: &mut App,
-        code_id: CodeId,
+        code_id: LotteryCodeId,
         sender: Addr,
         title: &str,
         label: &str,
@@ -67,6 +72,7 @@ impl LotteryContract {
         .map(Self::from)
     }
 
+    #[track_caller]
     pub fn buy(
         &self,
         app: &mut App,
@@ -86,6 +92,7 @@ impl LotteryContract {
         )
     }
 
+    #[track_caller]
     pub fn close(&self, app: &mut App, sender: Addr) -> AnyResult<AppResponse> {
         app.execute_contract(sender, self.addr(), &ExecuteMsg::Close {}, &[])
     }

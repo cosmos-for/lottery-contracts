@@ -3,12 +3,12 @@ use cw_multi_test::App;
 
 use crate::{state::BetInfo, ContractError, NATIVE_DENOM};
 
-use super::{alice, owner, CodeId};
+use super::{alice, owner, LotteryCodeId};
 
 #[test]
 fn instantiate_should_works() {
     let mut app = App::default();
-    let code_id = CodeId::store_code(&mut app);
+    let code_id = LotteryCodeId::store_code(&mut app);
     let title = "lottery title";
     let contract = code_id
         .instantiate(&mut app, owner(), title, "lottery test")
@@ -30,7 +30,7 @@ fn buy_lottery_should_works() {
             .unwrap();
     });
 
-    let code_id = CodeId::store_code(&mut app);
+    let code_id = LotteryCodeId::store_code(&mut app);
     let title = "lottery title";
     let contract = code_id
         .instantiate(&mut app, owner(), title, "lottery test")
@@ -62,7 +62,7 @@ fn close_lottery_should_fail() {
             .unwrap();
     });
 
-    let code_id = CodeId::store_code(&mut app);
+    let code_id = LotteryCodeId::store_code(&mut app);
     let title = "lottery title";
     let contract = code_id
         .instantiate(&mut app, owner(), title, "lottery test")

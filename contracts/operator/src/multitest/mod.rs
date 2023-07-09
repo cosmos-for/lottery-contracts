@@ -1,17 +1,19 @@
+#[cfg(test)]
 mod tests;
 
-use cosmwasm_std::{Addr, Coin};
+use cosmwasm_std::{from_binary, Addr, Coin};
 use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 
 use anyhow::Result as AnyResult;
+use cw_utils::parse_execute_response_data;
 use std::convert::Into;
 
 use crate::{msg::*, *};
 
 #[derive(Clone, Debug, Copy)]
-pub struct CodeId(u64);
+pub struct OperatorCodeId(u64);
 
-impl CodeId {
+impl OperatorCodeId {
     pub fn store_code(app: &mut App) -> Self {
         let contract = ContractWrapper::new(execute, instantiate, query).with_reply(reply);
         let code_id = app.store_code(Box::new(contract));
@@ -29,8 +31,8 @@ impl CodeId {
     }
 }
 
-impl From<CodeId> for u64 {
-    fn from(code_id: CodeId) -> Self {
+impl From<OperatorCodeId> for u64 {
+    fn from(code_id: OperatorCodeId) -> Self {
         code_id.0
     }
 }
@@ -44,9 +46,10 @@ impl OperatorContract {
         self.0.clone()
     }
 
+    #[track_caller]
     pub fn instantiate(
         app: &mut App,
-        code_id: CodeId,
+        code_id: OperatorCodeId,
         sender: Addr,
         title: &str,
         label: &str,
@@ -64,34 +67,71 @@ impl OperatorContract {
         .map(Self::from)
     }
 
-    // pub fn buy(
-    //     &self,
-    //     app: &mut App,
-    //     sender: Addr,
-    //     denom: &str,
-    //     memo: Option<String>,
-    //     funds: &[Coin],
-    // ) -> AnyResult<AppResponse> {
-    //     app.execute_contract(
-    //         sender,
-    //         self.addr(),
-    //         &ExecuteMsg::Buy {
-    //             denom: denom.into(),
-    //             memo,
-    //         },
-    //         funds,
-    //     )
-    // }
+    // 解释创建lottery的结果 TODO
+    #[track_caller]
+    pub fn create_lottery(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        lottery_code_id: u64,
+        title: &str,
+    ) -> AnyResult<Option<InstantiationData>> {
+        let msg = ExecuteMsg::CreateLottery {
+            lottery_code_id,
+            title: title.into(),
+        };
 
-    // pub fn close(&self, app: &mut App, sender: Addr) -> AnyResult<AppResponse> {
-    //     app.execute_contract(sender, self.addr(), &ExecuteMsg::Close {}, &[])
-    // }
+        let resp = self.execute_contract(app, sender, msg, &[])?;
+
+        resp.data
+            .map(|d| parse_execute_response_data(&d))
+            .transpose()?
+            .and_then(|d| d.data)
+            .map(|d| from_binary(&d))
+            .transpose()
+            .map_err(Into::into)
+    }
+
+    #[track_caller]
+    pub fn close_lottery(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        lottery: &str,
+    ) -> AnyResult<AppResponse> {
+        let msg = ExecuteMsg::CloseLottery {
+            lottery: lottery.into(),
+        };
+        self.execute_contract(app, sender, msg, &[])
+    }
+
+    #[track_caller]
+    pub fn draw_lottery(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        lottery: &str,
+    ) -> AnyResult<AppResponse> {
+        let msg = ExecuteMsg::DrawLottery {
+            lottery: lottery.into(),
+        };
+        self.execute_contract(app, sender, msg, &[])
+    }
 
     pub fn latest_lottery(&self, app: &App) -> StdResult<LatestLotteryResp> {
         app.wrap()
             .query_wasm_smart(self.addr(), &QueryMsg::LatestLottery {})
     }
 
+    pub fn execute_contract(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        msg: ExecuteMsg,
+        send_funds: &[Coin],
+    ) -> AnyResult<AppResponse> {
+        app.execute_contract(sender, self.addr(), &msg, send_funds)
+    }
     pub fn lotteries_count(&self, app: &App) -> StdResult<LotteriesCountResp> {
         app.wrap()
             .query_wasm_smart(self.addr(), &QueryMsg::LotteriesCount {})

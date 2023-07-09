@@ -39,3 +39,21 @@ pub fn create_lottery(
 
     Ok(resp)
 }
+
+pub fn close_lottery(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    lottery: String,
+) -> Result<Response, ContractError> {
+    todo!()
+}
+
+pub fn draw_lottery(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    lottery: String,
+) -> Result<Response, ContractError> {
+    todo!()
+}

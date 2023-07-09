@@ -7,7 +7,11 @@ pub struct InstantiateMsg {
 }
 
 #[cw_serde]
-pub enum ExecuteMsg {}
+pub enum ExecuteMsg {
+    CreateLottery { lottery_code_id: u64, title: String },
+    CloseLottery { lottery: String },
+    DrawLottery { lottery: String },
+}
 
 #[cw_serde]
 #[derive(QueryResponses)]
