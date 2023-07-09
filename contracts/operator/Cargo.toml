@@ -20,6 +20,7 @@ crate-type = ["cdylib", "rlib"]
 backtraces = ["cosmwasm-std/backtraces"]
 # use library feature to disable all instantiate/execute/query exports
 library = []
+mt = ["library",  "anyhow"]
 
 [package.metadata.scripts]
 optimize = """docker run --rm -v "$(pwd)":/code \
@@ -41,5 +42,9 @@ thiserror = { workspace = true }
 
 lottery = { path = "../lottery", features = ["library"]}
 
+anyhow = { workspace = true, optional = true }
+cw-multi-test = { workspace = true, optional = true }
+
 [dev-dependencies]
 cw-multi-test = { workspace = true }
+anyhow = { workspace = true }

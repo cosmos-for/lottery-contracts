@@ -2,7 +2,7 @@ use cosmwasm_std::{Addr, StdError};
 use cw_utils::PaymentError;
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum ContractError {
     #[error("{0}")]
     StdErr(#[from] StdError),

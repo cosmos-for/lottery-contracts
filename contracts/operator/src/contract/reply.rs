@@ -21,7 +21,7 @@ pub fn initial_lottery_instantiate(
     let data = InstantiationData { addr: addr.clone() };
     let resp = Response::new()
         .add_attribute("action", "initial_lottery_instantiate")
-        .add_attribute("lettery_addr", addr.to_string())
+        .add_attribute("lottery_addr", addr.to_string())
         .set_data(to_binary(&data)?);
 
     Ok(resp)

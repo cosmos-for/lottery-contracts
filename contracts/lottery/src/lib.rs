@@ -46,12 +46,13 @@ pub fn execute(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn reply(deps: DepsMut, env: Env, reply: Reply) -> Result<Response, ContractError> {
-    contract::reply::reply(deps, env, reply)
+    contract::reply(deps, env, reply)
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
+        QueryMsg::Owner {} => contract::query::owner(deps, STATE),
         QueryMsg::Winner {} => contract::query::winner(deps, env, STATE),
         QueryMsg::QueryBettor { bettor } => {
             contract::query::bettor_count(deps, env, bettor, BETTORS)

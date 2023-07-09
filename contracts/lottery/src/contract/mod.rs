@@ -2,7 +2,7 @@ pub mod exec;
 pub mod query;
 pub mod reply;
 
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Reply, Response};
 use cw2::set_contract_version;
 use cw_storage_plus::Item;
 
@@ -35,4 +35,8 @@ pub fn instantiate(
     state_item.save(deps.storage, &state)?;
 
     Ok(Response::new())
+}
+
+pub fn reply(_deps: DepsMut, _env: Env, _reply: Reply) -> Result<Response, ContractError> {
+    todo!()
 }

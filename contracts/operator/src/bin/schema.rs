@@ -1,11 +1,11 @@
 use cosmwasm_schema::write_api;
 
-use operator::msg::{ExecMsg, InstantiateMsg, QueryMsg};
+use operator::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 
 fn main() {
     write_api! {
         instantiate: InstantiateMsg,
-        execute: ExecMsg,
+        execute: ExecuteMsg,
         query: QueryMsg,
     }
 }

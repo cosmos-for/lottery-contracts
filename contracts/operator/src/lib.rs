@@ -4,12 +4,17 @@ pub mod helpers;
 pub mod msg;
 pub mod state;
 
+#[cfg(any(feature = "mt", test))]
+pub mod multitest;
+
 pub use crate::error::ContractError;
+
+pub const NATIVE_DENOM: &str = "LOTTERY";
 
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
-use msg::ExecMsg;
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
+use msg::ExecuteMsg;
 use state::CONFIG;
 // use cw2::set_contract_version;
 
@@ -30,15 +35,17 @@ pub fn execute(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    msg: ExecMsg,
+    msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     contract::execute(deps, env, info, msg)
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    unimplemented!()
+pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    contract::query(deps, env, msg)
 }
 
-#[cfg(test)]
-mod tests {}
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn reply(deps: DepsMut, env: Env, reply: Reply) -> Result<Response, ContractError> {
+    contract::reply(deps, env, reply)
+}

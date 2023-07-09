@@ -78,7 +78,7 @@ pub fn close(
     let sender = info.sender;
     let state = state.load(deps.storage)?;
     let owner = state.owner;
-    if owner == sender {
+    if owner != sender {
         return Err(ContractError::UnauthorizedErr {});
     }
 

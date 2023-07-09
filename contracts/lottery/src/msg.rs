@@ -22,10 +22,17 @@ pub enum ExecuteMsg {
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
+    #[returns(OwnerResp)]
+    Owner {},
     #[returns(WinnerResp)]
     Winner {},
     #[returns(QueryBettorResp)]
     QueryBettor { bettor: String },
+}
+
+#[cw_serde]
+pub struct OwnerResp {
+    pub owner: Addr,
 }
 
 #[cw_serde]

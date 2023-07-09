@@ -7,21 +7,28 @@ pub struct InstantiateMsg {
 }
 
 #[cw_serde]
-pub enum ExecMsg {}
+pub enum ExecuteMsg {}
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
-    #[returns(QueryLotteriesResp)]
-    QueryLotteries {},
+    #[returns(LotteriesCountResp)]
+    LotteriesCount {},
+    #[returns(LatestLotteryResp)]
+    LatestLottery {},
 }
 
 #[cw_serde]
-pub struct QueryLotteriesResp {
-    pub lotteries: Vec<Addr>,
+pub struct LotteriesCountResp {
+    pub counter: u64,
 }
 
 #[cw_serde]
 pub struct InstantiationData {
     pub addr: Addr,
+}
+
+#[cw_serde]
+pub struct LatestLotteryResp {
+    pub lottery: Option<Addr>,
 }

@@ -2,10 +2,14 @@ use cosmwasm_std::{to_binary, Addr, Binary, Deps, Env, StdResult};
 use cw_storage_plus::{Item, Map};
 
 use crate::{
-    msg::{QueryBettorResp, WinnerResp},
+    msg::{OwnerResp, QueryBettorResp, WinnerResp},
     state::{BetInfo, State},
 };
 
+pub fn owner(deps: Deps, state: Item<State>) -> StdResult<Binary> {
+    let state = state.load(deps.storage)?;
+    to_binary(&OwnerResp { owner: state.owner })
+}
 pub fn winner(deps: Deps, _env: Env, state: Item<State>) -> StdResult<Binary> {
     let state = state.may_load(deps.storage)?;
     to_binary(&WinnerResp {

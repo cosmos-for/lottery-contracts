@@ -1,13 +1,16 @@
 pub mod exec;
+pub mod query;
 pub mod reply;
 
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Reply, Response};
+use cosmwasm_std::{
+    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult,
+};
 use cw2::set_contract_version;
 use cw_storage_plus::Item;
 
 use crate::{
-    msg::{ExecMsg, InstantiateMsg},
-    state::{Config, LOTTERIES},
+    msg::{ExecuteMsg, InstantiateMsg, QueryMsg},
+    state::{Config, CONFIG, LATEST_LOTTERY, LOTTERIES},
     ContractError,
 };
 
@@ -29,6 +32,7 @@ pub fn instantiate(
     let config = Config {
         title: msg.title,
         owner: info.sender,
+        counter: 0,
     };
 
     state_item.save(deps.storage, &config)?;
@@ -40,9 +44,20 @@ pub fn execute(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    msg: ExecMsg,
+    msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     todo!()
+}
+
+pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    use QueryMsg::*;
+
+    match msg {
+        LatestLottery {} => {
+            query::latest_lottery(deps, LATEST_LOTTERY).and_then(|resp| to_binary(&resp))
+        }
+        LotteriesCount {} => query::lotteries_count(deps, CONFIG).and_then(|resp| to_binary(&resp)),
+    }
 }
 
 pub fn reply(deps: DepsMut, env: Env, reply: Reply) -> Result<Response, ContractError> {
