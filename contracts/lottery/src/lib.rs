@@ -40,9 +40,7 @@ pub fn execute(
         ExecuteMsg::Buy { denom, memo } => {
             contract::exec::buy(deps, env, info, memo, denom, STATE, BETTORS)
         }
-        ExecuteMsg::Close { rewards } => {
-            contract::exec::close(deps, env, info, rewards, STATE, BETTORS)
-        }
+        ExecuteMsg::Close {} => contract::exec::close(deps, env, info, STATE, BETTORS),
     }
 }
 
@@ -59,5 +57,6 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::QueryBettor { bettor } => {
             contract::query::bettor_count(deps, env, bettor, BETTORS)
         }
+        QueryMsg::CurrentState {} => contract::query::current_state(deps, STATE),
     }
 }

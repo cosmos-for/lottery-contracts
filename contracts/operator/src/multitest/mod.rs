@@ -1,11 +1,10 @@
 #[cfg(test)]
 mod tests;
 
-use cosmwasm_std::{coins, from_binary, Addr, Coin};
+use cosmwasm_std::{Addr, Coin};
 use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 
 use anyhow::Result as AnyResult;
-use cw_utils::parse_execute_response_data;
 use std::convert::Into;
 
 use crate::{msg::*, *};
@@ -81,7 +80,7 @@ impl OperatorContract {
             title: title.into(),
         };
 
-        let resp = self.execute_contract(app, sender, msg, &[])?;
+        self.execute_contract(app, sender, msg, &[])?;
 
         // resp.data
         //     .map(|d| parse_execute_response_data(&d))
@@ -99,13 +98,13 @@ impl OperatorContract {
         app: &mut App,
         sender: Addr,
         lottery: &str,
-        rewards: Vec<Coin>,
+        rewards: &[Coin],
     ) -> AnyResult<AppResponse> {
         let msg = ExecuteMsg::CloseLottery {
             lottery: lottery.into(),
-            rewards,
+            rewards: rewards.to_owned(),
         };
-        self.execute_contract(app, sender, msg, &[])
+        self.execute_contract(app, sender, msg, rewards)
     }
 
     #[track_caller]

@@ -69,7 +69,7 @@ fn close_lottery_should_fail() {
         .unwrap();
 
     let err = contract
-        .close(&mut app, alice(), coins(1000, NATIVE_DENOM))
+        .close(&mut app, alice(), &coins(1000, NATIVE_DENOM))
         .unwrap_err();
     assert_eq!(ContractError::UnauthorizedErr {}, err.downcast().unwrap())
 }

@@ -2,7 +2,7 @@ use cosmwasm_std::coins;
 use cw_multi_test::App;
 use lottery::multitest::{LotteryCodeId, LotteryContract};
 
-use crate::{ContractError, NATIVE_DENOM};
+use crate::NATIVE_DENOM;
 
 use super::{alice, owner, OperatorCodeId};
 
@@ -28,6 +28,10 @@ fn create_lottery_should_works() {
         router
             .bank
             .init_balance(storage, &alice(), coins(1000, NATIVE_DENOM))
+            .unwrap();
+        router
+            .bank
+            .init_balance(storage, &owner(), coins(2000, NATIVE_DENOM))
             .unwrap();
     });
     let code_id = OperatorCodeId::store_code(&mut app);
@@ -63,15 +67,27 @@ fn create_lottery_should_works() {
         )
         .unwrap();
 
-    lottery
-        .close(&mut app, contract.addr(), coins(1000, NATIVE_DENOM))
-        .unwrap();
-
-    // contract
-    //     .close_lottery(&mut app, owner(), lottery_addr.as_str())
+    // lottery
+    //     .close(&mut app, contract.addr(), coins(1000, NATIVE_DENOM))
     //     .unwrap();
+
+    contract
+        .close_lottery(
+            &mut app,
+            owner(),
+            lottery_addr.as_str(),
+            &coins(1000, NATIVE_DENOM),
+        )
+        .unwrap();
 
     let winner = lottery.winner(&app).unwrap();
 
-    assert_eq!(winner.winner, Some(alice()))
+    assert_eq!(winner.winner, Some(alice()));
+
+    let lottery_balances = LotteryContract::query_balances(&app, lottery_addr).unwrap();
+
+    assert_eq!(lottery_balances, coins(1100, NATIVE_DENOM));
+
+    let rewards = lottery.query_state(&app).unwrap();
+    assert_eq!(rewards.state.rewards, coins(1000, NATIVE_DENOM));
 }

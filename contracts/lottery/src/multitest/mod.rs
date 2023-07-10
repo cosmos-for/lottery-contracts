@@ -7,7 +7,8 @@ use anyhow::Result as AnyResult;
 use std::convert::Into;
 
 use crate::{
-    msg::{OwnerResp, QueryBettorResp, WinnerResp},
+    msg::{CurrentStateResp, OwnerResp, QueryBettorResp, WinnerResp},
+    state::State,
     *,
 };
 
@@ -93,8 +94,8 @@ impl LotteryContract {
     }
 
     #[track_caller]
-    pub fn close(&self, app: &mut App, sender: Addr, rewards: Vec<Coin>) -> AnyResult<AppResponse> {
-        app.execute_contract(sender, self.addr(), &ExecuteMsg::Close { rewards }, &[])
+    pub fn close(&self, app: &mut App, sender: Addr, rewards: &[Coin]) -> AnyResult<AppResponse> {
+        app.execute_contract(sender, self.addr(), &ExecuteMsg::Close {}, rewards)
     }
 
     pub fn winner(&self, app: &App) -> StdResult<WinnerResp> {
@@ -114,6 +115,15 @@ impl LotteryContract {
     pub fn owner(&self, app: &App) -> StdResult<OwnerResp> {
         app.wrap()
             .query_wasm_smart(self.addr(), &QueryMsg::Owner {})
+    }
+
+    pub fn query_balances(app: &App, addr: Addr) -> StdResult<Vec<Coin>> {
+        app.wrap().query_all_balances(addr)
+    }
+
+    pub fn query_state(&self, app: &App) -> StdResult<CurrentStateResp> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::CurrentState {})
     }
 }
 

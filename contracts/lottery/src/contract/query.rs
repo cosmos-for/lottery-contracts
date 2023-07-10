@@ -2,7 +2,7 @@ use cosmwasm_std::{to_binary, Addr, Binary, Deps, Env, StdResult};
 use cw_storage_plus::{Item, Map};
 
 use crate::{
-    msg::{OwnerResp, QueryBettorResp, WinnerResp},
+    msg::{CurrentStateResp, OwnerResp, QueryBettorResp, WinnerResp},
     state::{BetInfo, State},
 };
 
@@ -26,4 +26,9 @@ pub fn bettor_count(
     let info = bettors.may_load(deps.storage, &deps.api.addr_validate(&addr)?)?;
 
     to_binary(&QueryBettorResp { info })
+}
+
+pub fn current_state(deps: Deps, state_item: Item<State>) -> StdResult<Binary> {
+    let state = state_item.load(deps.storage)?;
+    to_binary(&CurrentStateResp { state })
 }

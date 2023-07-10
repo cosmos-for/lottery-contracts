@@ -1,8 +1,6 @@
-use cosmwasm_std::{
-    from_binary, to_binary, Addr, DepsMut, Env, Response, StdError, SubMsgResponse,
-};
+use cosmwasm_std::{to_binary, Addr, DepsMut, Env, Response, StdError, SubMsgResponse};
 use cw_storage_plus::{Item, Map};
-use cw_utils::{parse_execute_response_data, parse_instantiate_response_data};
+use cw_utils::parse_instantiate_response_data;
 
 use crate::{msg::InstantiationData, state::Config, ContractError};
 
@@ -37,9 +35,9 @@ pub fn initial_lottery_instantiated(
 }
 
 pub fn closed_lottery(
-    deps: DepsMut,
-    env: Env,
-    reply: Result<SubMsgResponse, String>,
+    _deps: DepsMut,
+    _env: Env,
+    _reply: Result<SubMsgResponse, String>,
 ) -> Result<Response, ContractError> {
     // let response = reply.map_err(StdError::generic_err)?;
     // let data = response.data.ok_or(ContractError::DataMissingErr {})?;

@@ -1,6 +1,6 @@
-use crate::state::BetInfo;
+use crate::state::{BetInfo, State};
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Addr, Coin};
+use cosmwasm_std::Addr;
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -15,7 +15,7 @@ pub enum ExecuteMsg {
         memo: Option<String>,
     },
     Close {
-        rewards: Vec<Coin>,
+        // rewards: Vec<Coin>,
     },
 }
 
@@ -28,6 +28,8 @@ pub enum QueryMsg {
     Winner {},
     #[returns(QueryBettorResp)]
     QueryBettor { bettor: String },
+    #[returns(CurrentStateResp)]
+    CurrentState {},
 }
 
 #[cw_serde]
@@ -43,4 +45,9 @@ pub struct WinnerResp {
 #[cw_serde]
 pub struct QueryBettorResp {
     pub info: Option<BetInfo>,
+}
+
+#[cw_serde]
+pub struct CurrentStateResp {
+    pub state: State,
 }

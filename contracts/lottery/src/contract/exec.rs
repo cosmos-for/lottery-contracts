@@ -1,4 +1,4 @@
-use cosmwasm_std::{Addr, Coin, DepsMut, Env, MessageInfo, Response, Storage};
+use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response, Storage};
 use cw_storage_plus::{Item, Map};
 use cw_utils::must_pay;
 
@@ -71,11 +71,11 @@ pub fn close(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    rewards: Vec<Coin>,
     state_item: Item<State>,
     bettors: Map<&Addr, BetInfo>,
 ) -> Result<Response, ContractError> {
     let sender = info.sender;
+    let rewards = info.funds;
     let mut state = state_item.load(deps.storage)?;
 
     if state.owner != sender {
