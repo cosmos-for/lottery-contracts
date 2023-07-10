@@ -6,10 +6,7 @@ use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 use anyhow::Result as AnyResult;
 use std::convert::Into;
 
-use crate::{
-    msg::{CurrentStateResp, OwnerResp, QueryBettorResp, WinnerResp},
-    *,
-};
+use crate::{msg::CurrentStateResp, *};
 
 #[derive(Clone, Debug, Copy)]
 pub struct LotteryCodeId(u64);
@@ -59,17 +56,18 @@ impl LotteryContract {
         title: &str,
         label: &str,
     ) -> AnyResult<Self> {
-        app.instantiate_contract(
-            code_id.0,
-            Addr::unchecked(sender),
-            &InstantiateMsg {
-                title: title.into(),
-            },
-            &[],
-            label,
-            None,
-        )
-        .map(Self::from)
+        // app.instantiate_contract(
+        //     code_id.0,
+        //     Addr::unchecked(sender),
+        //     &InstantiateMsg {
+        //         title: title.into(),
+        //     },
+        //     &[],
+        //     label,
+        //     None,
+        // )
+        // .map(Self::from)
+        todo!()
     }
 
     #[track_caller]
@@ -81,49 +79,50 @@ impl LotteryContract {
         memo: Option<String>,
         funds: &[Coin],
     ) -> AnyResult<AppResponse> {
-        app.execute_contract(
-            sender,
-            self.addr(),
-            &ExecuteMsg::Buy {
-                denom: denom.into(),
-                memo,
-            },
-            funds,
-        )
+        // app.execute_contract(
+        //     sender,
+        //     self.addr(),
+        //     &ExecuteMsg::Buy {
+        //         denom: denom.into(),
+        //         memo,
+        //     },
+        //     funds,
+        // )
+        todo!()
     }
 
-    #[track_caller]
-    pub fn close(&self, app: &mut App, sender: Addr, rewards: &[Coin]) -> AnyResult<AppResponse> {
-        app.execute_contract(sender, self.addr(), &ExecuteMsg::Close {}, rewards)
-    }
+    // #[track_caller]
+    // pub fn close(&self, app: &mut App, sender: Addr, rewards: &[Coin]) -> AnyResult<AppResponse> {
+    //     app.execute_contract(sender, self.addr(), &ExecuteMsg::Close {}, rewards)
+    // }
 
-    pub fn winner(&self, app: &App) -> StdResult<WinnerResp> {
-        app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::Winner {})
-    }
+    // pub fn winner(&self, app: &App) -> StdResult<WinnerResp> {
+    //     app.wrap()
+    //         .query_wasm_smart(self.addr(), &QueryMsg::Winner {})
+    // }
 
-    pub fn bettor_count(&self, app: &App, bettor: &str) -> StdResult<QueryBettorResp> {
-        app.wrap().query_wasm_smart(
-            self.addr(),
-            &QueryMsg::QueryBettor {
-                bettor: bettor.into(),
-            },
-        )
-    }
+    // pub fn bettor_count(&self, app: &App, bettor: &str) -> StdResult<QueryBettorResp> {
+    //     app.wrap().query_wasm_smart(
+    //         self.addr(),
+    //         &QueryMsg::QueryBettor {
+    //             bettor: bettor.into(),
+    //         },
+    //     )
+    // }
 
-    pub fn owner(&self, app: &App) -> StdResult<OwnerResp> {
-        app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::Owner {})
-    }
+    // pub fn owner(&self, app: &App) -> StdResult<OwnerResp> {
+    //     app.wrap()
+    //         .query_wasm_smart(self.addr(), &QueryMsg::Owner {})
+    // }
 
-    pub fn query_balances(app: &App, addr: Addr) -> StdResult<Vec<Coin>> {
-        app.wrap().query_all_balances(addr)
-    }
+    // pub fn query_balances(app: &App, addr: Addr) -> StdResult<Vec<Coin>> {
+    //     app.wrap().query_all_balances(addr)
+    // }
 
-    pub fn query_state(&self, app: &App) -> StdResult<CurrentStateResp> {
-        app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::CurrentState {})
-    }
+    // pub fn query_state(&self, app: &App) -> StdResult<CurrentStateResp> {
+    //     app.wrap()
+    //         .query_wasm_smart(self.addr(), &QueryMsg::CurrentState {})
+    // }
 }
 
 impl From<Addr> for LotteryContract {
