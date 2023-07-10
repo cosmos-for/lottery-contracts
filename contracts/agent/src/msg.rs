@@ -1,4 +1,4 @@
-use crate::state::{BetInfo, LotteryInfo, State};
+use crate::state::{LotteryInfo, State};
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Addr;
 

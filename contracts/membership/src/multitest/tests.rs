@@ -1,3 +1,4 @@
+use agent::multitest::AgentCodeId;
 use cosmwasm_std::coins;
 use cw_multi_test::App;
 
@@ -9,84 +10,58 @@ use super::{alice, owner, MembershipCodeId};
 fn instantiate_should_works() {
     let mut app = App::default();
     let code_id = MembershipCodeId::store_code(&mut app);
-    // let title = "operator title";
-    // let contract = code_id
-    //     .instantiate(&mut app, owner(), title, "operator test")
-    //     .unwrap();
+    let title = "membership title";
+    let agent_code_id = agent::multitest::AgentCodeId::store_code(&mut app);
+    let contract = code_id
+        .instantiate(
+            &mut app,
+            owner(),
+            title,
+            agent_code_id.into(),
+            "membership test",
+        )
+        .unwrap();
 
-    // let lottery = contract.latest_lottery(&app).unwrap();
-    // assert!(lottery.lottery.is_none());
-
-    // let lotteries_count = contract.lotteries_count(&app).unwrap();
-    // assert_eq!(lotteries_count.counter, 0);
+    let membership = contract.current_config(&app).unwrap();
+    assert_eq!(membership.config.title, title);
+    assert_eq!(membership.config.agent_code_id, agent_code_id.id());
+    assert_eq!(membership.config.counter, 0);
+    assert_eq!(membership.config.owner, owner());
 }
 
-// #[test]
-// fn create_lottery_should_works() {
-//     let mut app = App::new(|router, _api, storage| {
-//         router
-//             .bank
-//             .init_balance(storage, &alice(), coins(1000, NATIVE_DENOM))
-//             .unwrap();
-//         router
-//             .bank
-//             .init_balance(storage, &owner(), coins(2000, NATIVE_DENOM))
-//             .unwrap();
-//     });
-//     let code_id = MembershipCodeId::store_code(&mut app);
-//     let lottery_code_id = LotteryCodeId::store_code(&mut app);
-//     let title = "operator title";
-//     let contract = code_id
-//         .instantiate(&mut app, owner(), title, "operator test")
-//         .unwrap();
+#[test]
+fn create_agent_should_works() {
+    let mut app = App::new(|router, _api, storage| {
+        router
+            .bank
+            .init_balance(storage, &alice(), coins(1000, NATIVE_DENOM))
+            .unwrap();
+        router
+            .bank
+            .init_balance(storage, &owner(), coins(2000, NATIVE_DENOM))
+            .unwrap();
+    });
+    let code_id = MembershipCodeId::store_code(&mut app);
+    let agent_code_id = AgentCodeId::store_code(&mut app);
+    let title = "membership title";
+    let contract = code_id
+        .instantiate(
+            &mut app,
+            owner(),
+            title,
+            agent_code_id.id(),
+            "membership test",
+        )
+        .unwrap();
 
-//     let resp = contract
-//         .create_lottery(&mut app, owner(), lottery_code_id.into(), "create lottery")
-//         .unwrap();
-//     assert!(resp.is_none());
+    let resp = contract
+        .create_agent(&mut app, owner(), "create lottery")
+        .unwrap();
+    assert!(resp.is_none());
 
-//     let lotteries_count = contract.lotteries_count(&app).unwrap();
-//     assert_eq!(lotteries_count.counter, 1);
+    let resp = contract.current_config(&app).unwrap();
+    assert_eq!(resp.config.counter, 1);
 
-//     let latest_lottery = contract.latest_lottery(&app).unwrap();
-//     assert!(latest_lottery.lottery.is_some());
-
-//     // assert!(resp.is_some());
-
-//     let lottery_addr = latest_lottery.lottery.unwrap();
-//     let lottery = LotteryContract::from_addr(lottery_addr.clone());
-
-//     lottery
-//         .buy(
-//             &mut app,
-//             alice(),
-//             NATIVE_DENOM,
-//             Some("alice buy lottery".into()),
-//             &coins(100, NATIVE_DENOM),
-//         )
-//         .unwrap();
-
-//     // lottery
-//     //     .close(&mut app, contract.addr(), coins(1000, NATIVE_DENOM))
-//     //     .unwrap();
-
-//     contract
-//         .close_lottery(
-//             &mut app,
-//             owner(),
-//             lottery_addr.as_str(),
-//             &coins(1000, NATIVE_DENOM),
-//         )
-//         .unwrap();
-
-//     let winner = lottery.winner(&app).unwrap();
-
-//     assert_eq!(winner.winner, Some(alice()));
-
-//     let lottery_balances = LotteryContract::query_balances(&app, lottery_addr).unwrap();
-
-//     assert_eq!(lottery_balances, coins(1100, NATIVE_DENOM));
-
-//     let rewards = lottery.query_state(&app).unwrap();
-//     assert_eq!(rewards.state.rewards, coins(1000, NATIVE_DENOM));
-// }
+    let resp = contract.agent_lists(&app).unwrap();
+    assert_eq!(resp.agents.len(), 1);
+}

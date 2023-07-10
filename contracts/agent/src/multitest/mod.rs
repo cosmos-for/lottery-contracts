@@ -6,15 +6,16 @@ use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 use anyhow::Result as AnyResult;
 use std::convert::Into;
 
-use crate::{
-    msg::{CurrentStateResp, LotteriesWinnedResp},
-    *,
-};
+use crate::{msg::CurrentStateResp, *};
 
 #[derive(Clone, Debug, Copy)]
 pub struct AgentCodeId(u64);
 
 impl AgentCodeId {
+    pub fn id(&self) -> u64 {
+        self.0
+    }
+
     pub fn store_code(app: &mut App) -> Self {
         let contract = ContractWrapper::new(execute, instantiate, query).with_reply(reply);
         let code_id = app.store_code(Box::new(contract));
@@ -36,6 +37,12 @@ impl AgentCodeId {
 impl From<AgentCodeId> for u64 {
     fn from(code_id: AgentCodeId) -> Self {
         code_id.0
+    }
+}
+
+impl From<u64> for AgentCodeId {
+    fn from(code_id: u64) -> Self {
+        Self(code_id)
     }
 }
 

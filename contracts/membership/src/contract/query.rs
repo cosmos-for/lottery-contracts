@@ -2,18 +2,19 @@ use cosmwasm_std::{Addr, Deps, StdResult};
 use cw_storage_plus::Item;
 
 use crate::{
+    msg::{AgentListsResp, CurrentConfigResp},
     state::Config,
 };
 
-// pub fn latest_lottery(deps: Deps, latest_lottery: Item<Addr>) -> StdResult<LatestLotteryResp> {
-//     let lottery = latest_lottery.may_load(deps.storage)?;
+pub fn agent_lists(deps: Deps, agents_item: Item<Vec<Addr>>) -> StdResult<AgentListsResp> {
+    let agents = agents_item.may_load(deps.storage)?;
 
-//     Ok(LatestLotteryResp { lottery })
-// }
+    Ok(AgentListsResp {
+        agents: agents.unwrap_or_default(),
+    })
+}
 
-// pub fn lotteries_count(deps: Deps, config: Item<Config>) -> StdResult<LotteriesCountResp> {
-//     let config = config.load(deps.storage)?;
-//     Ok(LotteriesCountResp {
-//         counter: config.counter,
-//     })
-// }
+pub fn current_config(deps: Deps, config: Item<Config>) -> StdResult<CurrentConfigResp> {
+    let config = config.load(deps.storage)?;
+    Ok(CurrentConfigResp { config })
+}

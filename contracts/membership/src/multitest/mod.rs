@@ -24,9 +24,10 @@ impl MembershipCodeId {
         app: &mut App,
         sender: Addr,
         title: &str,
+        agent_code_id: u64,
         label: &str,
     ) -> AnyResult<MembershipContract> {
-        MembershipContract::instantiate(app, self, sender, title, label)
+        MembershipContract::instantiate(app, self, sender, title, agent_code_id, label)
     }
 }
 
@@ -51,6 +52,7 @@ impl MembershipContract {
         code_id: MembershipCodeId,
         sender: Addr,
         title: &str,
+        agent_code_id: u64,
         label: &str,
     ) -> AnyResult<Self> {
         app.instantiate_contract(
@@ -58,6 +60,7 @@ impl MembershipContract {
             Addr::unchecked(sender),
             &InstantiateMsg {
                 title: title.into(),
+                agent_code_id,
             },
             &[],
             label,
@@ -66,30 +69,29 @@ impl MembershipContract {
         .map(Self::from)
     }
 
-    // 解释创建lottery的结果 TODO
-    // #[track_caller]
-    // pub fn create_lottery(
-    //     &self,
-    //     app: &mut App,
-    //     sender: Addr,
-    //     lottery_code_id: u64,
-    //     title: &str,
-    // ) -> AnyResult<Option<InstantiationData>> {
-    //     // let msg = ExecuteMsg::CreateLottery {
-    //     //     lottery_code_id,
-    //     //     title: title.into(),
-    //     // };
+    #[track_caller]
+    pub fn create_agent(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        name: &str,
+    ) -> AnyResult<Option<InstantiationData>> {
+        let msg = ExecuteMsg::CreateAgent { name: name.into() };
 
-    //     // self.execute_contract(app, sender, msg, &[])?;
+        self.execute_contract(app, sender, msg, &[])?;
 
-    //     Ok(None)
-    // }
+        Ok(None)
+    }
 
-    // pub fn latest_lottery(&self, app: &App) -> StdResult<LatestLotteryResp> {
-    //     app.wrap()
-    //         .query_wasm_smart(self.addr(), &QueryMsg::LatestLottery {})
-    // }
+    pub fn current_config(&self, app: &App) -> StdResult<CurrentConfigResp> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::CurrentConfig {})
+    }
 
+    pub fn agent_lists(&self, app: &App) -> StdResult<AgentListsResp> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::AgentLists {})
+    }
     pub fn execute_contract(
         &self,
         app: &mut App,
@@ -99,7 +101,6 @@ impl MembershipContract {
     ) -> AnyResult<AppResponse> {
         app.execute_contract(sender, self.addr(), &msg, send_funds)
     }
-
 }
 
 impl From<Addr> for MembershipContract {
