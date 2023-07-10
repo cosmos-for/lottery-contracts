@@ -42,8 +42,9 @@ thiserror = { workspace = true }
 anyhow = { workspace = true, optional = true }
 cw-multi-test = { workspace = true, optional = true }
 
+lottery = { path = "../lottery", features = ["library"]}
 
 [dev-dependencies]
 anyhow = { workspace = true }
 cw-multi-test = { workspace = true }
-
+lottery = { path = "../lottery", features = ["mt"]}

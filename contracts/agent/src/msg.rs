@@ -41,3 +41,9 @@ pub struct LotteriesWinnedResp {
 pub struct CurrentStateResp {
     pub state: State,
 }
+
+#[cw_serde]
+pub struct Buy {
+    pub denom: String,
+    pub memo: Option<String>,
+}

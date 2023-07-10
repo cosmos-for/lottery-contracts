@@ -12,7 +12,7 @@ pub use crate::error::ContractError;
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
 use msg::LotteriesJoinedResp;
-use state::STATE;
+use state::{LOTTERIES_JOINED, LOTTERIES_JOINED_MAP, STATE};
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 
@@ -36,10 +36,15 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    use ExecuteMsg::*;
-    match msg {
-        Buy { addr, denom, memo } => todo!(),
-    }
+    contract::execute(
+        deps,
+        env,
+        info,
+        msg,
+        STATE,
+        LOTTERIES_JOINED,
+        LOTTERIES_JOINED_MAP,
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -49,11 +54,5 @@ pub fn reply(deps: DepsMut, env: Env, reply: Reply) -> Result<Response, Contract
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    use QueryMsg::*;
-
-    match msg {
-        LotteriesJoined {} => todo!(),
-        LotteriesWinned {} => todo!(),
-        CurrentState {} => todo!(),
-    }
+    contract::query(deps, env, msg)
 }

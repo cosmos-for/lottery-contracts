@@ -1,75 +1,62 @@
-// use cosmwasm_std::coins;
-// use cw_multi_test::App;
+use cosmwasm_std::coins;
+use cw_multi_test::App;
 
-// use crate::{state::BetInfo, ContractError, NATIVE_DENOM};
+use crate::{state::BetInfo, ContractError, NATIVE_DENOM};
 
-// use super::{alice, owner, LotteryCodeId};
+use super::{alice, owner, AgentCodeId};
 
-// #[test]
-// fn instantiate_should_works() {
-//     let mut app = App::default();
-//     let code_id = LotteryCodeId::store_code(&mut app);
-//     let title = "lottery title";
-//     let contract = code_id
-//         .instantiate(&mut app, owner(), title, "lottery test")
-//         .unwrap();
+#[test]
+fn instantiate_should_works() {
+    let mut app = App::default();
+    let code_id = AgentCodeId::store_code(&mut app);
+    let title = "lottery title";
+    let agent_owner = owner().to_string();
+    let contract = code_id
+        .instantiate(&mut app, owner(), title, &agent_owner, "lottery test")
+        .unwrap();
 
-//     let winner = contract.winner(&app).unwrap();
-//     assert_eq!(winner.winner, None);
+    let joined = contract.lotteries_joined(&app).unwrap();
+    assert!(joined.lotteries.is_empty());
 
-//     let contract_owner = contract.owner(&app).unwrap();
-//     assert_eq!(contract_owner.owner, owner());
-// }
+    let state = contract.current_state(&app).unwrap();
+    assert_eq!(state.state.owner, agent_owner,)
+}
 
-// #[test]
-// fn buy_lottery_should_works() {
-//     let mut app = App::new(|router, _api, storage| {
-//         router
-//             .bank
-//             .init_balance(storage, &alice(), coins(3000, NATIVE_DENOM))
-//             .unwrap();
-//     });
+#[test]
+fn buy_lottery_should_works() {
+    let mut app = App::new(|router, _api, storage| {
+        router
+            .bank
+            .init_balance(storage, &alice(), coins(1000, NATIVE_DENOM))
+            .unwrap();
+        router
+            .bank
+            .init_balance(storage, &owner(), coins(2000, NATIVE_DENOM))
+            .unwrap();
+    });
 
-//     let code_id = LotteryCodeId::store_code(&mut app);
-//     let title = "lottery title";
-//     let contract = code_id
-//         .instantiate(&mut app, owner(), title, "lottery test")
-//         .unwrap();
+    let code_id = AgentCodeId::store_code(&mut app);
+    let lottery_id = lottery::multitest::LotteryCodeId::store_code(&mut app);
+    let lottery_contract = lottery_id
+        .instantiate(&mut app, alice(), "lottery title", "lottery test")
+        .unwrap();
+    let title = "agent title";
+    let agent_owner = owner().to_string();
+    let contract = code_id
+        .instantiate(&mut app, owner(), title, &agent_owner, "agent test")
+        .unwrap();
 
-//     contract
-//         .buy(
-//             &mut app,
-//             alice(),
-//             NATIVE_DENOM,
-//             Some("恭喜发财!".to_string()),
-//             &coins(100, NATIVE_DENOM),
-//         )
-//         .unwrap();
-//     let resp = contract.bettor_count(&app, alice().as_str()).unwrap();
-//     let expected = BetInfo {
-//         buy_at: 12345,
-//         memo: Some("恭喜发财!".to_string()),
-//     };
-//     assert_eq!(resp.info, Some(expected));
-// }
+    contract
+        .buy_lottery(
+            &mut app,
+            owner(),
+            lottery_contract.addr().as_str(),
+            NATIVE_DENOM,
+            Some("恭喜发财!".to_string()),
+            &coins(100, NATIVE_DENOM),
+        )
+        .unwrap();
 
-// #[test]
-// fn close_lottery_should_fail() {
-//     let mut app = App::new(|router, _api, storage| {
-//         router
-//             .bank
-//             .init_balance(storage, &alice(), coins(3000, NATIVE_DENOM))
-//             .unwrap();
-//     });
-
-//     let code_id = LotteryCodeId::store_code(&mut app);
-//     let title = "lottery title";
-//     let contract = code_id
-//         .instantiate(&mut app, owner(), title, "lottery test")
-//         .unwrap();
-
-//     let err = contract
-//         .close(&mut app, alice(), &coins(1000, NATIVE_DENOM))
-//         .unwrap_err();
-//     assert_eq!(ContractError::UnauthorizedErr {}, err.downcast().unwrap())
-// }
+    let joined = contract.lotteries_joined(&app).unwrap();
+    assert_eq!(joined.lotteries.len(), 1);
+}
