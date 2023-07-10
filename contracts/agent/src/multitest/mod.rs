@@ -6,7 +6,10 @@ use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 use anyhow::Result as AnyResult;
 use std::convert::Into;
 
-use crate::{msg::CurrentStateResp, *};
+use crate::{
+    msg::{CurrentStateResp, LotteriesJoinedResp},
+    *,
+};
 
 #[derive(Clone, Debug, Copy)]
 pub struct AgentCodeId(u64);

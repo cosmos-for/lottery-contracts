@@ -11,7 +11,7 @@ pub use crate::error::ContractError;
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Reply, Response, StdResult};
-use msg::LotteriesJoinedResp;
+
 use state::{LOTTERIES_JOINED, LOTTERIES_JOINED_MAP, STATE};
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
