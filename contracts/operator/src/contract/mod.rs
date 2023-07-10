@@ -19,6 +19,7 @@ const CONTRACT_NAME: &str = env!("CARGO_PKG_NAME");
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub const INITIAL_LOTTERY_INSTANTIATION_REPLY_ID: u64 = 1;
+pub const CLOSE_LOTTERY_REPLY_ID: u64 = 2;
 
 pub fn instantiate(
     deps: DepsMut,
@@ -53,7 +54,9 @@ pub fn execute(
             lottery_code_id,
             title,
         } => exec::create_lottery(deps, env, info, lottery_code_id, title, CONFIG),
-        CloseLottery { lottery } => exec::close_lottery(deps, env, info, lottery),
+        CloseLottery { lottery, rewards } => {
+            exec::close_lottery(deps, env, info, lottery, rewards, LATEST_LOTTERY, CONFIG)
+        }
         DrawLottery { lottery } => exec::draw_lottery(deps, env, info, lottery),
     }
 }
@@ -71,9 +74,15 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 
 pub fn reply(deps: DepsMut, env: Env, reply: Reply) -> Result<Response, ContractError> {
     match reply.id {
-        INITIAL_LOTTERY_INSTANTIATION_REPLY_ID => {
-            reply::initial_lottery_instantiate(deps, env, reply.result.into_result(), LOTTERIES)
-        }
+        INITIAL_LOTTERY_INSTANTIATION_REPLY_ID => reply::initial_lottery_instantiated(
+            deps,
+            env,
+            reply.result.into_result(),
+            LOTTERIES,
+            CONFIG,
+            LATEST_LOTTERY,
+        ),
+        CLOSE_LOTTERY_REPLY_ID => reply::closed_lottery(deps, env, reply.result.into_result()),
         id => Err(ContractError::UnRecognizedReplyIdErr { id }),
     }
 }

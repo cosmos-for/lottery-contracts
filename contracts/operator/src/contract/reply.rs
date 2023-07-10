@@ -1,14 +1,18 @@
-use cosmwasm_std::{to_binary, Addr, DepsMut, Env, Response, StdError, SubMsgResponse};
-use cw_storage_plus::Map;
-use cw_utils::parse_instantiate_response_data;
+use cosmwasm_std::{
+    from_binary, to_binary, Addr, DepsMut, Env, Response, StdError, SubMsgResponse,
+};
+use cw_storage_plus::{Item, Map};
+use cw_utils::{parse_execute_response_data, parse_instantiate_response_data};
 
-use crate::{msg::InstantiationData, ContractError};
+use crate::{msg::InstantiationData, state::Config, ContractError};
 
-pub fn initial_lottery_instantiate(
+pub fn initial_lottery_instantiated(
     deps: DepsMut,
     env: Env,
     reply: Result<SubMsgResponse, String>,
     lotteries: Map<&Addr, u64>,
+    config: Item<Config>,
+    latest_lottery: Item<Addr>,
 ) -> Result<Response, ContractError> {
     let response = reply.map_err(StdError::generic_err)?;
     let data = response.data.ok_or(ContractError::DataMissingErr {})?;
@@ -17,6 +21,11 @@ pub fn initial_lottery_instantiate(
     let addr = Addr::unchecked(response.contract_address);
 
     lotteries.save(deps.storage, &addr, &env.block.height)?;
+    latest_lottery.save(deps.storage, &addr)?;
+    config.update(deps.storage, |mut config| -> Result<_, ContractError> {
+        config.counter += 1;
+        Ok(config)
+    })?;
 
     let data = InstantiationData { addr: addr.clone() };
     let resp = Response::new()
@@ -25,4 +34,18 @@ pub fn initial_lottery_instantiate(
         .set_data(to_binary(&data)?);
 
     Ok(resp)
+}
+
+pub fn closed_lottery(
+    deps: DepsMut,
+    env: Env,
+    reply: Result<SubMsgResponse, String>,
+) -> Result<Response, ContractError> {
+    // let response = reply.map_err(StdError::generic_err)?;
+    // let data = response.data.ok_or(ContractError::DataMissingErr {})?;
+
+    // let _response = parse_execute_response_data(&data)?;
+    // let data = response.data.map(|d| from_binary(&d)?);
+
+    Ok(Response::new())
 }

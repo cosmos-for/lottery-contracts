@@ -40,7 +40,9 @@ pub fn execute(
         ExecuteMsg::Buy { denom, memo } => {
             contract::exec::buy(deps, env, info, memo, denom, STATE, BETTORS)
         }
-        ExecuteMsg::Close {} => contract::exec::close(deps, env, info, STATE, BETTORS),
+        ExecuteMsg::Close { rewards } => {
+            contract::exec::close(deps, env, info, rewards, STATE, BETTORS)
+        }
     }
 }
 

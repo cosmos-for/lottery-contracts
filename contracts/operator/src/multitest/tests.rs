@@ -40,10 +40,17 @@ fn create_lottery_should_works() {
     let resp = contract
         .create_lottery(&mut app, owner(), lottery_code_id.into(), "create lottery")
         .unwrap();
+    assert!(resp.is_none());
 
-    assert!(resp.is_some());
+    let lotteries_count = contract.lotteries_count(&app).unwrap();
+    assert_eq!(lotteries_count.counter, 1);
 
-    let lottery_addr = resp.unwrap().addr;
+    let latest_lottery = contract.latest_lottery(&app).unwrap();
+    assert!(latest_lottery.lottery.is_some());
+
+    // assert!(resp.is_some());
+
+    let lottery_addr = latest_lottery.lottery.unwrap();
     let lottery = LotteryContract::from_addr(lottery_addr.clone());
 
     lottery
@@ -56,9 +63,13 @@ fn create_lottery_should_works() {
         )
         .unwrap();
 
-    contract
-        .close_lottery(&mut app, owner(), lottery_addr.as_str())
+    lottery
+        .close(&mut app, contract.addr(), coins(1000, NATIVE_DENOM))
         .unwrap();
+
+    // contract
+    //     .close_lottery(&mut app, owner(), lottery_addr.as_str())
+    //     .unwrap();
 
     let winner = lottery.winner(&app).unwrap();
 

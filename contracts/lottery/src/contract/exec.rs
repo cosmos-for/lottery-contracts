@@ -1,4 +1,4 @@
-use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{Addr, Coin, DepsMut, Env, MessageInfo, Response, Storage};
 use cw_storage_plus::{Item, Map};
 use cw_utils::must_pay;
 
@@ -71,14 +71,14 @@ pub fn close(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    // addr: String,
-    state: Item<State>,
-    _bettors: Map<&Addr, BetInfo>,
+    rewards: Vec<Coin>,
+    state_item: Item<State>,
+    bettors: Map<&Addr, BetInfo>,
 ) -> Result<Response, ContractError> {
     let sender = info.sender;
-    let state = state.load(deps.storage)?;
-    let owner = state.owner;
-    if owner != sender {
+    let mut state = state_item.load(deps.storage)?;
+
+    if state.owner != sender {
         return Err(ContractError::UnauthorizedErr {});
     }
 
@@ -99,10 +99,20 @@ pub fn close(
     }
 
     // Calculate the rewards TODO
+    state.rewards = rewards;
 
     // Choose the winner TODO
+    state.winner = choose_winner(bettors, deps.storage)?;
 
-    // Set winner of the lottery TOTO
+    state_item.save(deps.storage, &state)?;
 
     Ok(Response::new())
+}
+
+pub fn choose_winner(
+    bettors: Map<&Addr, BetInfo>,
+    storage: &dyn Storage,
+) -> Result<Option<Addr>, ContractError> {
+    let winner = bettors.first(storage)?;
+    Ok(winner.map(|(k, _)| k))
 }

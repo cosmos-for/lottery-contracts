@@ -28,7 +28,7 @@ pub fn instantiate(
         height: blockheight,
         title: msg.title,
         owner: info.sender,
-        rewards: 0,
+        rewards: vec![],
         winner: None,
     };
 
