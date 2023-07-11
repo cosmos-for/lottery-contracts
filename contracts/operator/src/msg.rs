@@ -9,7 +9,6 @@ pub struct InstantiateMsg {
 #[cw_serde]
 pub enum ExecuteMsg {
     CreateLottery { lottery_code_id: u64, title: String },
-    CloseLottery { lottery: String, rewards: Vec<Coin> },
     DrawLottery { lottery: String },
 }
 
@@ -35,4 +34,10 @@ pub struct InstantiationData {
 #[cw_serde]
 pub struct LatestLotteryResp {
     pub lottery: Option<Addr>,
+}
+
+#[cw_serde]
+pub struct LotteryRewards {
+    pub lottery: String,
+    pub funds: Vec<Coin>,
 }

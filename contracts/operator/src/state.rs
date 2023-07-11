@@ -1,6 +1,7 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::Addr;
+use cosmwasm_std::{Addr, Coin};
 use cw_storage_plus::{Item, Map};
+
 
 #[cw_serde]
 pub struct Config {
@@ -14,3 +15,5 @@ pub const CONFIG: Item<Config> = Item::new("config");
 pub const LOTTERIES: Map<&Addr, u64> = Map::new("lotteries");
 
 pub const LATEST_LOTTERY: Item<Addr> = Item::new("latest_lottery");
+
+pub const LOTTERY_REWARDS: Map<&Addr, Vec<Coin>> = Map::new("lottery_rewards");

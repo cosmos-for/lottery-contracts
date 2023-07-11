@@ -10,7 +10,7 @@ use cw_storage_plus::Item;
 
 use crate::{
     msg::{ExecuteMsg, InstantiateMsg, QueryMsg},
-    state::{Config, CONFIG, LATEST_LOTTERY, LOTTERIES},
+    state::{Config, CONFIG, LATEST_LOTTERY, LOTTERIES, LOTTERY_REWARDS},
     ContractError,
 };
 
@@ -54,10 +54,9 @@ pub fn execute(
             lottery_code_id,
             title,
         } => exec::create_lottery(deps, env, info, lottery_code_id, title, CONFIG),
-        CloseLottery { lottery, rewards } => {
-            exec::close_lottery(deps, info, lottery, rewards, CONFIG)
+        DrawLottery { lottery } => {
+            exec::draw_lottery(deps, info, lottery, CONFIG, LOTTERY_REWARDS)
         }
-        DrawLottery { lottery } => exec::draw_lottery(deps, env, info, lottery),
     }
 }
 

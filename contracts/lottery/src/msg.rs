@@ -14,9 +14,10 @@ pub enum ExecuteMsg {
         denom: String,
         memo: Option<String>,
     },
-    Close {
+    Draw {
         // rewards: Vec<Coin>,
     },
+    
 }
 
 #[cw_serde]

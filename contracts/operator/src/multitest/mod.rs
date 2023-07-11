@@ -82,6 +82,7 @@ impl OperatorContract {
 
         self.execute_contract(app, sender, msg, &[])?;
 
+        // TODO
         // resp.data
         //     .map(|d| parse_execute_response_data(&d))
         //     .transpose()?
@@ -100,9 +101,8 @@ impl OperatorContract {
         lottery: &str,
         rewards: &[Coin],
     ) -> AnyResult<AppResponse> {
-        let msg = ExecuteMsg::CloseLottery {
+        let msg = ExecuteMsg::DrawLottery { 
             lottery: lottery.into(),
-            rewards: rewards.to_owned(),
         };
         self.execute_contract(app, sender, msg, rewards)
     }
@@ -130,9 +130,9 @@ impl OperatorContract {
         app: &mut App,
         sender: Addr,
         msg: ExecuteMsg,
-        send_funds: &[Coin],
+        funds: &[Coin],
     ) -> AnyResult<AppResponse> {
-        app.execute_contract(sender, self.addr(), &msg, send_funds)
+        app.execute_contract(sender, self.addr(), &msg, funds)
     }
     pub fn lotteries_count(&self, app: &App) -> StdResult<LotteriesCountResp> {
         app.wrap()

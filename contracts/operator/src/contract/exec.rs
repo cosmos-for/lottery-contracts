@@ -1,7 +1,7 @@
-use cosmwasm_std::{to_binary, Coin, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg};
-use cw_storage_plus::Item;
+use cosmwasm_std::{to_binary, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg, coins, Coin, Addr};
+use cw_storage_plus::{Item, Map};
 
-use crate::{state::Config, ContractError};
+use crate::{state::Config, ContractError, NATIVE_DENOM};
 
 use lottery::msg::{ExecuteMsg as LotteryExecuteMsg, InstantiateMsg as LotterInstantiateMsg};
 
@@ -40,12 +40,12 @@ pub fn create_lottery(
     Ok(resp)
 }
 
-pub fn close_lottery(
+pub fn draw_lottery(
     deps: DepsMut,
     info: MessageInfo,
     lottery: String,
-    rewards: Vec<Coin>,
     config: Item<Config>,
+    lottery_rewards: Map<&Addr, Vec<Coin>>,
 ) -> Result<Response, ContractError> {
     let sender = info.sender;
     let config = config.load(deps.storage)?;
@@ -53,11 +53,14 @@ pub fn close_lottery(
         return Err(ContractError::Unauthorized {});
     }
 
-    let close_msg = LotteryExecuteMsg::Close {};
+    let funds = calculate_lottery_rewards(lottery.as_str());
+    lottery_rewards.save(deps.storage, &Addr::unchecked(&lottery), &funds)?;
+
+    let close_msg = LotteryExecuteMsg::Draw {};
     let msg = WasmMsg::Execute {
         contract_addr: lottery.clone(),
         msg: to_binary(&close_msg)?,
-        funds: rewards,
+        funds,
     };
 
     let resp = Response::new()
@@ -69,11 +72,6 @@ pub fn close_lottery(
     Ok(resp)
 }
 
-pub fn draw_lottery(
-    _deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
-    _lottery: String,
-) -> Result<Response, ContractError> {
-    todo!()
+pub fn calculate_lottery_rewards(_lottery: &str) -> Vec<Coin> {
+    coins(1000, NATIVE_DENOM)
 }
