@@ -17,7 +17,10 @@ pub enum ExecuteMsg {
     Draw {
         // rewards: Vec<Coin>,
     },
-    
+    WithdrawRewards {
+        amount: u128,
+        denom: String,
+    },
 }
 
 #[cw_serde]

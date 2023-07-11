@@ -36,12 +36,7 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    match msg {
-        ExecuteMsg::Buy { denom, memo } => {
-            contract::exec::buy(deps, env, info, memo, denom, STATE, BETTORS)
-        }
-        ExecuteMsg::Draw {} => contract::exec::close(deps, env, info, STATE, BETTORS),
-    }
+    contract::execute(deps, env, info, msg)
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

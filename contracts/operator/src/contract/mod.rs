@@ -54,9 +54,7 @@ pub fn execute(
             lottery_code_id,
             title,
         } => exec::create_lottery(deps, env, info, lottery_code_id, title, CONFIG),
-        DrawLottery { lottery } => {
-            exec::draw_lottery(deps, info, lottery, CONFIG, LOTTERY_REWARDS)
-        }
+        DrawLottery { lottery } => exec::draw_lottery(deps, info, lottery, CONFIG, LOTTERY_REWARDS),
     }
 }
 

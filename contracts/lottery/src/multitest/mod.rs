@@ -93,8 +93,27 @@ impl LotteryContract {
     }
 
     #[track_caller]
-    pub fn close(&self, app: &mut App, sender: Addr, rewards: &[Coin]) -> AnyResult<AppResponse> {
+    pub fn draw(&self, app: &mut App, sender: Addr, rewards: &[Coin]) -> AnyResult<AppResponse> {
         app.execute_contract(sender, self.addr(), &ExecuteMsg::Draw {}, rewards)
+    }
+
+    #[track_caller]
+    pub fn withdraw(
+        &self,
+        app: &mut App,
+        sender: Addr,
+        amount: u128,
+        denom: &str,
+    ) -> AnyResult<AppResponse> {
+        app.execute_contract(
+            sender,
+            self.addr(),
+            &ExecuteMsg::WithdrawRewards {
+                amount,
+                denom: denom.into(),
+            },
+            &[],
+        )
     }
 
     pub fn winner(&self, app: &App) -> StdResult<WinnerResp> {

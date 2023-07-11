@@ -25,3 +25,5 @@ pub struct BetInfo {
 pub const STATE: Item<State> = Item::new("state");
 
 pub const BETTORS: Map<&Addr, BetInfo> = Map::new("bettors");
+
+pub const WITHDRAWS: Map<&Addr, Vec<Coin>> = Map::new("withdraws");

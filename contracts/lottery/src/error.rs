@@ -24,4 +24,10 @@ pub enum ContractError {
 
     #[error("Lottery: {addr} is already closed")]
     LotteryIsAlreadyClosedErr { addr: Addr },
+
+    #[error("Widthraw amount: {amount}:{denom} is too much")]
+    WidthrawAmountTooMuchErr { amount: u128, denom: String },
+
+    #[error("No people buy lottery")]
+    LotteryNoBettorErr {},
 }

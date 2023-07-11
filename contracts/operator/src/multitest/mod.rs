@@ -101,7 +101,7 @@ impl OperatorContract {
         lottery: &str,
         rewards: &[Coin],
     ) -> AnyResult<AppResponse> {
-        let msg = ExecuteMsg::DrawLottery { 
+        let msg = ExecuteMsg::DrawLottery {
             lottery: lottery.into(),
         };
         self.execute_contract(app, sender, msg, rewards)

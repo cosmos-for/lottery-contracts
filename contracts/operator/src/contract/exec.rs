@@ -1,4 +1,6 @@
-use cosmwasm_std::{to_binary, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg, coins, Coin, Addr};
+use cosmwasm_std::{
+    coins, to_binary, Addr, Coin, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg,
+};
 use cw_storage_plus::{Item, Map};
 
 use crate::{state::Config, ContractError, NATIVE_DENOM};
