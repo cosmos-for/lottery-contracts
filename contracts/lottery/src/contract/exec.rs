@@ -69,6 +69,29 @@ pub fn buy(
     }
 }
 
+pub fn transfer(
+    deps: DepsMut,
+    _env: Env,
+    info: MessageInfo,
+    recipient: String,
+    state_item: Item<State>,
+) -> Result<Response, ContractError> {
+    let sender = info.sender;
+    let mut state = state_item.load(deps.storage)?;
+
+    if sender != state.owner {
+        return Err(ContractError::UnauthorizedErr {});
+    }
+
+    let owner = deps.api.addr_validate(&recipient)?;
+
+    state.owner = owner;
+
+    state_item.save(deps.storage, &state)?;
+
+    Ok(Response::new())
+}
+
 pub fn draw(
     deps: DepsMut,
     env: Env,

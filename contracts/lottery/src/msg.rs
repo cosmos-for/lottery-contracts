@@ -21,6 +21,9 @@ pub enum ExecuteMsg {
         amount: u128,
         denom: String,
     },
+    Transfer {
+        recipient: String,
+    },
 }
 
 #[cw_serde]

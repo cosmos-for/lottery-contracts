@@ -55,8 +55,10 @@ pub fn execute(
         WithdrawRewards { amount, denom } => {
             exec::withdraw(deps, env, info, amount, denom.as_str(), STATE, WITHDRAWS)
         }
+        Transfer { recipient } => exec::transfer(deps, env, info, recipient, STATE),
     }
 }
+
 pub fn reply(_deps: DepsMut, _env: Env, _reply: Reply) -> Result<Response, ContractError> {
     todo!()
 }

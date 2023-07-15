@@ -1,4 +1,6 @@
-use cosmwasm_std::coins;
+use std::ops::Rem;
+
+use cosmwasm_std::{coins, Uint128};
 use cw_multi_test::App;
 use lottery::multitest::{LotteryCodeId, LotteryContract};
 
@@ -20,6 +22,9 @@ fn instantiate_should_works() {
 
     let lotteries_count = contract.lotteries_count(&app).unwrap();
     assert_eq!(lotteries_count.counter, 0);
+
+    let t = Uint128::new(100);
+    let r = t.rem(Uint128::new(1000));
 }
 
 #[test]
